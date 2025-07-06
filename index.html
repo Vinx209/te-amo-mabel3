@@ -1,17 +1,119 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Te Amo Mabel</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Te Amo Mabel</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background: black;
+      font-family: 'Courier New', Courier, monospace;
+    }
+
+    canvas#matrix {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .mensaje {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 3em;
+      color: lime;
+      z-index: 1;
+      text-shadow: 0 0 10px lime;
+    }
+
+    .explosion {
+      position: absolute;
+      color: lime;
+      font-weight: bold;
+      pointer-events: none;
+      z-index: 2;
+      animation: fadeOut 1s ease-out forwards;
+    }
+
+    @keyframes fadeOut {
+      0% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(2); }
+    }
+  </style>
 </head>
 <body>
-    <audio autoplay loop>
-        <source src="como_tu.mp3" type="audio/mpeg">
-        Tu navegador no soporta audio HTML5.
-    </audio>
-    <canvas id="fallingText"></canvas>
-    <script src="script.js"></script>
+  <canvas id="matrix"></canvas>
+  <h1 class="mensaje">Te Amo Mabel</h1>
+
+  <audio id="audio" loop autoplay>
+    <source src="como_tu.mp3" type="audio/mpeg" />
+    Tu navegador no soporta audio HTML5.
+  </audio>
+
+  <script>
+    console.log("Iniciando animación Matrix");
+
+    const canvas = document.getElementById("matrix");
+    const ctx = canvas.getContext("2d");
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+
+    const letras = "Te Amo Mabel 💚 ".split("");
+    const fontSize = 14;
+    const columnas = canvas.width / fontSize;
+    const drops = Array(Math.floor(columnas)).fill(1);
+
+    function draw() {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#0F0";
+      ctx.font = fontSize + "px monospace";
+      for (let i = 0; i < drops.length; i++) {
+        const text = letras[Math.floor(Math.random() * letras.length)];
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          console.log(`Reiniciando gota en columna ${i}`);
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    }
+    setInterval(draw, 33);
+
+    document.addEventListener("click", (e) => {
+      console.log(`Clic detectado en posición (${e.pageX}, ${e.pageY})`);
+      const frases = [
+        "Te amo",
+        "Mi vida",
+        "Eres todo",
+        "Mabel 💚",
+        "Mi razón",
+        "Contigo siempre",
+        "Guapa",
+        "Linsa",
+        "Hermosa"
+      ];
+      const texto = frases[Math.floor(Math.random() * frases.length)];
+      console.log(`Frase mostrada: ${texto}`);
+      const span = document.createElement("span");
+      span.className = "explosion";
+      span.textContent = texto;
+      span.style.left = e.pageX + "px";
+      span.style.top = e.pageY + "px";
+      document.body.appendChild(span);
+      setTimeout(() => {
+        console.log("Eliminando frase");
+        span.remove();
+      }, 1000);
+    });
+  </script>
 </body>
 </html>
