@@ -51,9 +51,10 @@
 </head>
 <body>
   <canvas id="matrix"></canvas>
-  <h1 class="mensaje">Te Amo Mabel</h1>
+  <h1 class="mensaje">Te Amo Mabel♡</h1>
 
-  <audio id="audio" loop autoplay>
+  <!-- Audio sin autoplay para evitar bloqueos -->
+  <audio id="audio" loop>
     <source src="como_tu.mp3" type="audio/mpeg" />
     Tu navegador no soporta audio HTML5.
   </audio>
@@ -66,7 +67,7 @@
     canvas.height = window.innerHeight;
     canvas.width = window.innerWidth;
 
-    const letras = "Te Amo Mabel <3 ".split("");
+    const letras = "Te Amo Mabel ♡ ".split("");
     const fontSize = 14;
     const columnas = canvas.width / fontSize;
     const drops = Array(Math.floor(columnas)).fill(1);
@@ -88,8 +89,21 @@
     }
     setInterval(draw, 33);
 
+    const audio = document.getElementById("audio");
+    let audioStarted = false;
+
     document.addEventListener("click", (e) => {
       console.log(`Clic detectado en posición (${e.pageX}, ${e.pageY})`);
+
+      if (!audioStarted) {
+        audio.play().then(() => {
+          console.log("Audio reproducido tras clic");
+          audioStarted = true;
+        }).catch((err) => {
+          console.warn("Error al reproducir audio:", err);
+        });
+      }
+
       const frases = [
         "Te amo",
         "Mi vida",
@@ -97,12 +111,11 @@
         "Mabel 💚",
         "Mi razón",
         "Contigo siempre",
-        "Guapa",
-        "Linsa",
         "Hermosa"
       ];
       const texto = frases[Math.floor(Math.random() * frases.length)];
       console.log(`Frase mostrada: ${texto}`);
+
       const span = document.createElement("span");
       span.className = "explosion";
       span.textContent = texto;
